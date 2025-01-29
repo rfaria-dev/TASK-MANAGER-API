@@ -9,6 +9,10 @@ const taskSchema = new Schema({
 		type: Boolean,
 		default: false,
 	},
+	createdAt: {
+		type: Date,
+		default: Date.now,
+	},
 });
 
 const taskModel = model("Task", taskSchema);
