@@ -3,7 +3,11 @@ import chalk from "chalk";
 
 const connectToDataBase = async () => {
 	try {
-		(await mongoose.connect(process.env.DB_URL)).isObjectIdOrHexString(
+		(
+			await mongoose.connect(process.env.DB_URL, {
+				dbName: "DataHubAPI",
+			})
+		).isObjectIdOrHexString(
 			console.log(chalk.cyanBright("Connected to the MongoDb database!"))
 		);
 	} catch (err) {
