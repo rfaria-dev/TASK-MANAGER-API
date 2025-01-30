@@ -6,12 +6,13 @@ import { taskRouter } from "./routes/task.routes.js";
 
 dotenv.config();
 
+const port = process.env.PORT || 4000;
 const app = express();
 app.use(express.json());
 
 connectToDataBase();
 app.use("/tasks", taskRouter);
 
-app.listen(8000, () => {
-	console.log(chalk.cyanBright("Server is running on port 8000!"));
+app.listen(port, () => {
+	console.log(chalk.cyanBright(`Server is running on port ${port}!`));
 });
