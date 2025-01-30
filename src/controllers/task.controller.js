@@ -1,11 +1,12 @@
 import { taskModel } from "../models/task.model.js";
+import { notFoundError } from "../utils/errors/mongodb.errors.js";
 
 class TaskController {
 	constructor(req, res) {
 		this.req = req;
 		this.res = res;
 	}
-	getTasks = async () => {
+	getAllTasks = async () => {
 		try {
 			const tasks = await taskModel.find({});
 			this.res.status(200).send(tasks);
@@ -18,10 +19,7 @@ class TaskController {
 			const taskId = this.req.params.id;
 			const task = await taskModel.findById(taskId);
 
-			if (!task) {
-				return this.res.status(404).send("Task not found!");
-			}
-
+			if (!task) return notFoundError(this.res);
 			this.res.status(200).send(task);
 		} catch (err) {
 			this.res.status(500).send(err.message);
@@ -42,9 +40,7 @@ class TaskController {
 			const taskId = this.req.params.id;
 			const currentTask = await taskModel.findById(taskId);
 
-			if (!currentTask) {
-				return this.res.status(404).send("Task not found!");
-			}
+			if (!currentTask) return notFoundError(this.res);
 
 			const taskToBeDeleted = await taskModel.findByIdAndDelete(taskId);
 			this.res.status(200).send(taskToBeDeleted);
@@ -80,9 +76,7 @@ class TaskController {
 			);
 
 			// Check if the task exists
-			if (!updatedTask) {
-				return this.res.status(404).send("Task not found");
-			}
+			if (!updatedTask) return notFoundError(this.res);
 
 			// Return the updated task
 			return this.res.status(200).send(updatedTask);

@@ -4,7 +4,7 @@ import { TaskController } from "../controllers/task.controller.js";
 const router = express.Router();
 
 router.get("/", async (req, res) => {
-	return new TaskController(req, res).getTasks();
+	return new TaskController(req, res).getAllTasks();
 });
 
 router.get("/:id", async (req, res) => {
