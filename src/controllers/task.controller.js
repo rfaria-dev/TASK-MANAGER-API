@@ -1,5 +1,9 @@
 import { taskModel } from "../models/task.model.js";
-import { notFoundError } from "../utils/errors/mongodb.errors.js";
+import {
+	notFoundError,
+	objectIdCastError,
+} from "../utils/errors/mongodb.errors.js";
+import { notAllowedFieldsToUpdateError } from "../utils/errors/general.errors.js";
 
 class TaskController {
 	constructor(req, res) {
@@ -22,7 +26,7 @@ class TaskController {
 			if (!task) return notFoundError(this.res);
 			this.res.status(200).send(task);
 		} catch (err) {
-			this.res.status(500).send(err.message);
+			objectIdCastError(this.err, this.res);
 		}
 	};
 	createTask = async () => {
@@ -45,7 +49,7 @@ class TaskController {
 			const taskToBeDeleted = await taskModel.findByIdAndDelete(taskId);
 			this.res.status(200).send(taskToBeDeleted);
 		} catch (err) {
-			this.res.status(500).send(err.message);
+			objectIdCastError(this.err, this.res);
 		}
 	};
 	updateTask = async () => {
@@ -61,11 +65,7 @@ class TaskController {
 				if (allowedUpdates.includes(update)) {
 					updatesToApply[update] = taskData[update];
 				} else {
-					return this.res
-						.status(400)
-						.send(
-							"Invalid update: One or more editable fields are not allowed to be updated"
-						);
+					return notAllowedFieldsToUpdateError(this.res);
 				}
 			}
 			// Update the document in the database
@@ -82,9 +82,8 @@ class TaskController {
 			return this.res.status(200).send(updatedTask);
 		} catch (err) {
 			// Handle errors
-			return res.status(500).send(err.message);
+			return this.res.status(500).send(err.message);
 		}
 	};
 }
-
 export { TaskController };
