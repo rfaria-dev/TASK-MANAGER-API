@@ -62,6 +62,46 @@ app.delete("/tasks/:id", async (req, res) => {
 	}
 });
 
+app.patch("/tasks/:id", async (req, res) => {
+	try {
+		const taskId = req.params.id;
+		const taskData = req.body;
+		const allowedUpdates = ["isCompleted"];
+		const requestedUpdates = Object.keys(taskData);
+
+		// Filter allowed updates
+		const updatesToApply = {};
+		for (const update of requestedUpdates) {
+			if (allowedUpdates.includes(update)) {
+				updatesToApply[update] = taskData[update];
+			} else {
+				return res
+					.status(400)
+					.send(
+						"Invalid update: One or more editable fields are not allowed to be updated"
+					);
+			}
+		}
+		// Update the document in the database
+		const updatedTask = await taskModel.findByIdAndUpdate(
+			taskId,
+			updatesToApply,
+			{ new: true, runValidators: true } // Return the updated document and run validations
+		);
+
+		// Check if the task exists
+		if (!updatedTask) {
+			return res.status(404).send("Task not found");
+		}
+
+		// Return the updated task
+		return res.status(200).send(updatedTask);
+	} catch (err) {
+		// Handle errors
+		return res.status(500).send(err.message);
+	}
+});
+
 app.listen(8000, () => {
 	console.log(chalk.cyanBright("Server is running on port 8000!"));
 });
