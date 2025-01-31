@@ -4,8 +4,6 @@ import dotenv from "dotenv";
 import { connectToDataBase } from "./database/mongoose.database.js";
 import { taskRouter } from "./routes/task.routes.js";
 
-//Teste
-
 dotenv.config();
 
 const port = process.env.PORT || 4000;
